@@ -4,9 +4,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-    public void StartServer(int port) throws Exception{
-        ServerSocket welcomeSocket = new ServerSocket(port);  // bind + listen
-        ExecutorService executor = Executors.newFixedThreadPool(10);
+    private Config config;
+
+    public void StartServer() throws Exception{
+        config = new Config("config.ini");
+
+        ServerSocket welcomeSocket = new ServerSocket(config.getPort());  // bind + listen
+        ExecutorService executor = Executors.newFixedThreadPool(config.getMaxThreads());
 
         while (true) {
             Socket clientSocket = welcomeSocket.accept();
