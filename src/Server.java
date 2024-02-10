@@ -4,7 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-    private Config config;
+    public static Config config;
     private int port;
 
     public void StartServer() throws Exception{

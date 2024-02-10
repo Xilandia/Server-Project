@@ -1,12 +1,14 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class HTTPRequest {
     public enum Method {
-        GET, POST
+        GET, POST, HEAD, PUT, DELETE, CONNECT, OPTIONS, TRACE, PATCH
     }
 
     private Method method;
     private String path;
+    private boolean isHTML;
     private boolean isImage;
     private boolean isIcon;
     private String referer;
@@ -22,7 +24,9 @@ public class HTTPRequest {
         String method = firstLine[0];
         String path = firstLine[1];
         this.method = Method.valueOf(method);
+        //this.path = SanitizePath(path);
         this.path = path;
+        this.isHTML = path.endsWith(".html") || path.endsWith(".htm");
         this.isImage = path.endsWith(".bmp") || path.endsWith(".gif") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg"); // bonus - want to support jpeg bc why not
         this.isIcon = path.endsWith(".ico");
         this.parameters = new HashMap<String, String>();
@@ -41,5 +45,36 @@ public class HTTPRequest {
         System.out.println("Is Icon: " + this.isIcon);
         System.out.println("Referer: " + this.referer);
         System.out.println("User-Agent: " + this.userAgent);
+    }
+
+    public Method getMethod() {
+        return this.method;
+    }
+
+    public String getPath() {
+        return this.path;
+    }
+
+    public boolean getIsHTML() {
+        return this.isHTML;
+    }
+
+    public boolean getIsImage() {
+        return this.isImage;
+    }
+
+    public boolean getIsIcon() {
+        return this.isIcon;
+    }
+
+    private String SanitizePath(String path) {
+        String[] parts = path.split("/");
+        ArrayList<String> sanitizedParts = new ArrayList<>();
+        for (String part : parts) {
+            if (!part.equals("..") && !part.equals(".")) {
+                sanitizedParts.add(part);
+            }
+        }
+        return String.join("/", sanitizedParts);
     }
 }

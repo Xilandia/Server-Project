@@ -1,6 +1,7 @@
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.io.File;
 
 public class Config {
     private int port;
@@ -13,6 +14,10 @@ public class Config {
         FileInputStream inputStream = new FileInputStream(configFile);
         properties.load(inputStream);
         inputStream.close();
+
+        File file = new File(configFile);
+        System.out.println(file.getAbsolutePath());
+        System.out.println(file.getCanonicalFile());
 
         this.port = Integer.parseInt(properties.getProperty("port"));
         this.root = properties.getProperty("root");

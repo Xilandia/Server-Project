@@ -4,6 +4,7 @@ import java.net.Socket;
 public class EchoRunnable implements Runnable{
     private Socket clientSocket = null;
     private HTTPRequest request;
+    private HTTPResponse response;
 
     EchoRunnable(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -33,6 +34,7 @@ public class EchoRunnable implements Runnable{
             System.out.println("HTTP Request: \n" + fullClientRequest + "\n");
             if (!fullClientRequest.isEmpty()) {
                 request = new HTTPRequest(fullClientRequest);
+                response = new HTTPResponse(request);
                 outToClient.writeBytes("HTTP/1.1 200 OK\r\n");
                 // Parse request
                 //outToClient.writeBytes(capitalizedSentence);  // write
