@@ -5,11 +5,14 @@ import java.util.concurrent.Executors;
 
 public class Server {
     private Config config;
+    private int port;
 
     public void StartServer() throws Exception{
         config = new Config("config.ini");
+        port = config.getPort();
+        System.out.println("Listening on port " + port);
 
-        ServerSocket welcomeSocket = new ServerSocket(config.getPort());  // bind + listen
+        ServerSocket welcomeSocket = new ServerSocket(port);
         ExecutorService executor = Executors.newFixedThreadPool(config.getMaxThreads());
 
         while (true) {
