@@ -24,8 +24,7 @@ public class HTTPRequest {
         String method = firstLine[0];
         String path = firstLine[1];
         this.method = Method.valueOf(method);
-        //this.path = SanitizePath(path);
-        this.path = path;
+        this.path = SanitizePath(path);
         this.isHTML = path.endsWith(".html") || path.endsWith(".htm");
         this.isImage = path.endsWith(".bmp") || path.endsWith(".gif") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg"); // bonus - want to support jpeg bc why not
         this.isIcon = path.endsWith(".ico");

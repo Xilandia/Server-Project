@@ -17,7 +17,7 @@ public class Server {
 
         while (true) {
             Socket clientSocket = welcomeSocket.accept();
-            Runnable worker = new EchoRunnable(clientSocket);
+            Runnable worker = new ClientConnection(clientSocket);
 
             executor.execute(worker);
         }

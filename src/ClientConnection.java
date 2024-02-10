@@ -1,12 +1,12 @@
 import java.io.*;
 import java.net.Socket;
 
-public class EchoRunnable implements Runnable{
-    private Socket clientSocket = null;
+public class ClientConnection implements Runnable{
+    private Socket clientSocket;
     private HTTPRequest request;
     private HTTPResponse response;
 
-    EchoRunnable(Socket clientSocket) {
+    ClientConnection(Socket clientSocket) {
         this.clientSocket = clientSocket;
 //        try {
 //            this.clientSocket.setSoTimeout(500);
@@ -35,9 +35,7 @@ public class EchoRunnable implements Runnable{
             if (!fullClientRequest.isEmpty()) {
                 request = new HTTPRequest(fullClientRequest);
                 response = new HTTPResponse(request);
-                outToClient.writeBytes("HTTP/1.1 200 OK\r\n");
-                // Parse request
-                //outToClient.writeBytes(capitalizedSentence);  // write
+                outToClient.writeBytes("HTTP/1.1 200 OK\r\n"); // fixme: this is a placeholder
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());

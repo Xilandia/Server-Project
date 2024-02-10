@@ -15,10 +15,6 @@ public class Config {
         properties.load(inputStream);
         inputStream.close();
 
-        File file = new File(configFile);
-        System.out.println(file.getAbsolutePath());
-        System.out.println(file.getCanonicalFile());
-
         this.port = Integer.parseInt(properties.getProperty("port"));
         this.root = properties.getProperty("root");
         this.defaultPage = properties.getProperty("defaultPage");

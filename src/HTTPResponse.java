@@ -16,23 +16,25 @@ public class HTTPResponse {
                 contentType = "content-type: application/octet-stream";
             }
 
-            File file = new File(Server.config.getRoot() + request.getPath());
-            if (file.exists()) {
-                String canonicalPath = file.getCanonicalPath();
-                if (canonicalPath.startsWith(Server.config.getRoot().substring((1)))) {
-                    System.out.println("Sending 200");
-                    responseCode = 200;
-                }
-                else {
-                    System.out.println("Bad path passed sanitization: " + request.getPath());
-                    responseCode = 400;
+            if (request.getPath().equals("")) {
+                System.out.println("Sending 200");
+                responseCode = 200;
+            } else {
+                File file = new File(Server.config.getRoot() + request.getPath().substring(1));
+                if (file.exists()) {
+                    String canonicalPath = file.getCanonicalPath();
+                    if (canonicalPath.startsWith(Server.config.getRoot().substring((1)))) {
+                        System.out.println("Sending 200");
+                        responseCode = 200;
+                    } else {
+                        System.out.println("Bad path passed sanitization: " + request.getPath());
+                        responseCode = 400;
+                    }
+                } else {
+                    System.out.println("Sending 404");
+                    responseCode = 404;
                 }
             }
-            else {
-                System.out.println("Sending 404");
-                responseCode = 404;
-            }
-
         }
         else if (request.getMethod() == HTTPRequest.Method.POST) {
             System.out.println("Sending 404");
