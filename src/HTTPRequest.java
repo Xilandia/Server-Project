@@ -25,7 +25,7 @@ public class HTTPRequest {
         String path = firstLine[1];
         this.method = Method.valueOf(method);
         this.path = SanitizePath(path);
-        this.isHTML = path.endsWith(".html") || path.endsWith(".htm");
+        this.isHTML = path.endsWith(".html") || path.endsWith(".htm") || path.equals("/");
         this.isImage = path.endsWith(".bmp") || path.endsWith(".gif") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg"); // bonus - want to support jpeg bc why not
         this.isIcon = path.endsWith(".ico");
         this.parameters = new HashMap<String, String>();
@@ -38,12 +38,13 @@ public class HTTPRequest {
             }
         }
 
-        System.out.println("Method: " + this.method);
+        /*System.out.println("Method: " + this.method);
         System.out.println("Path: " + this.path);
+        System.out.println("Is HTML: " + this.isHTML);
         System.out.println("Is Image: " + this.isImage);
         System.out.println("Is Icon: " + this.isIcon);
         System.out.println("Referer: " + this.referer);
-        System.out.println("User-Agent: " + this.userAgent);
+        System.out.println("User-Agent: " + this.userAgent);*/
     }
 
     public Method getMethod() {

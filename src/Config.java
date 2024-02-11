@@ -1,7 +1,6 @@
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.io.File;
 
 public class Config {
     private int port;
@@ -26,7 +25,7 @@ public class Config {
     }
 
     public String getRoot() {
-        return root;
+        return root.replaceFirst("^~", System.getProperty("user.home"));
     }
 
     public String getDefaultPage() {

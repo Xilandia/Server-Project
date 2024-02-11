@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
 
 public class ClientConnection implements Runnable{
     private Socket clientSocket;
@@ -31,11 +32,16 @@ public class ClientConnection implements Runnable{
                 line = inFromClient.readLine();
             }
             fullClientRequest = clientRequest.toString();
-            System.out.println("HTTP Request: \n" + fullClientRequest + "\n");
+            System.out.println("Request header: \n" + fullClientRequest + "\n");
             if (!fullClientRequest.isEmpty()) {
                 request = new HTTPRequest(fullClientRequest);
                 response = new HTTPResponse(request);
-                outToClient.writeBytes("HTTP/1.1 200 OK\r\n"); // fixme: this is a placeholder
+                System.out.println("Response header:\n" + response.buildHeaders() + "\n");
+                outToClient.writeBytes(response.buildHeaders());
+                if (response.getResponseCode() == 200) {
+                    Files.copy(response.getFile().toPath(), outToClient);
+                }
+                outToClient.flush();
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());

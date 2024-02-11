@@ -4,6 +4,7 @@ import java.io.IOException;
 public class HTTPResponse {
     private String contentType;
     private int responseCode;
+    private File requestedFile;
     public HTTPResponse(HTTPRequest request) throws IOException {
         if (request.getMethod() == HTTPRequest.Method.GET) {
             if (request.getIsHTML()) {
@@ -17,21 +18,19 @@ public class HTTPResponse {
             }
 
             if (request.getPath().equals("")) {
-                System.out.println("Sending 200");
+                requestedFile = new File(Server.config.getRoot(), Server.config.getDefaultPage());
                 responseCode = 200;
             } else {
-                File file = new File(Server.config.getRoot() + request.getPath().substring(1));
-                if (file.exists()) {
-                    String canonicalPath = file.getCanonicalPath();
-                    if (canonicalPath.startsWith(Server.config.getRoot().substring((1)))) {
-                        System.out.println("Sending 200");
+                requestedFile = new File(Server.config.getRoot(), request.getPath());
+                if (requestedFile.exists()) {
+                    String canonicalPath = requestedFile.getCanonicalPath();
+                    if (canonicalPath.startsWith(Server.config.getRoot())) {
                         responseCode = 200;
                     } else {
                         System.out.println("Bad path passed sanitization: " + request.getPath());
                         responseCode = 400;
                     }
                 } else {
-                    System.out.println("Sending 404");
                     responseCode = 404;
                 }
             }
@@ -44,5 +43,33 @@ public class HTTPResponse {
             System.out.println("Sending 501");
             responseCode = 501;
         }
+    }
+
+    public String buildHeaders() {
+        return "HTTP/1.1 " + responseCodeToString() + "\r\n" + contentType +
+                "\r\ncontent-length: " + requestedFile.length() + "\r\n\r\n";
+    }
+
+    private String responseCodeToString() {
+        switch (responseCode) {
+            case 200:
+                return "200 OK";
+            case 400:
+                return "400 Bad Request";
+            case 404:
+                return "404 Not Found";
+            case 501:
+                return "501 Not Implemented";
+            default:
+                return "500 Internal Server Error";
+        }
+    }
+
+    public File getFile() {
+        return requestedFile;
+    }
+
+    public int getResponseCode() {
+        return responseCode;
     }
 }
