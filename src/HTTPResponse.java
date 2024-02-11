@@ -17,7 +17,7 @@ public class HTTPResponse {
                 contentType = "content-type: application/octet-stream";
             }
 
-            if (request.getPath().equals("")) {
+            if (request.getPath().isEmpty()) {
                 requestedFile = new File(Server.config.getRoot(), Server.config.getDefaultPage());
                 responseCode = 200;
             } else {

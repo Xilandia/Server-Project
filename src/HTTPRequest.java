@@ -13,7 +13,8 @@ public class HTTPRequest {
     private boolean isIcon;
     private String referer;
     private String userAgent;
-    private HashMap<String, String> parameters;
+    private static HashMap<String, String> parameters = new HashMap<String, String>();
+
     public HTTPRequest(String request) {
         parseRequest(request);
     }
@@ -28,7 +29,6 @@ public class HTTPRequest {
         this.isHTML = path.endsWith(".html") || path.endsWith(".htm") || path.equals("/");
         this.isImage = path.endsWith(".bmp") || path.endsWith(".gif") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg"); // bonus - want to support jpeg bc why not
         this.isIcon = path.endsWith(".ico");
-        this.parameters = new HashMap<String, String>();
         for (int i = 1; i < lines.length; i++) {
             String[] parts = lines[i].split(": ");
             if (parts[0].equals("Referer")) {
