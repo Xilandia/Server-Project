@@ -43,7 +43,18 @@ public class HTTPResponse {
                         responseCode = 400;
                     }
                 } else {
-                    responseCode = 404;
+                    requestedFile = new File(Server.config.getRoot(), "404.html");
+                    if (requestedFile.exists()) {
+                        contentLength = (int) requestedFile.length();
+                        responseCode = 404;
+                        contentType = "content-type: text/html";
+                        if (request.getMethod() == HTTPRequest.Method.GET) {
+                            sendDecision = true;
+                        }
+                    } else {
+                        System.out.println("404.html not found");
+                        responseCode = 500;
+                    }
                 }
             }
         }

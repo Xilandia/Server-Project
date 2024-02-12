@@ -26,9 +26,9 @@ public class HTTPRequest {
         String[] lines = request.split("\n");
         String[] firstLine = lines[0].split(" ");
         String method = firstLine[0];
-        String path = firstLine[1];
+        String path = SanitizePath(firstLine[1]);
         this.method = Method.valueOf(method);
-        this.path = SanitizePath(path);
+        this.path = path;
         this.isHTML = path.endsWith(".html") || path.endsWith(".htm") || path.equals("/");
         this.isImage = path.endsWith(".bmp") || path.endsWith(".gif") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg"); // bonus - want to support jpeg bc why not
         this.isIcon = path.endsWith(".ico");
@@ -41,8 +41,16 @@ public class HTTPRequest {
                 this.userAgent = parts[1];
             }
         }
+
         if (this.method == Method.TRACE) {
             this.requestForTrace = request.getBytes(StandardCharsets.UTF_8);
+        }
+        if (this.method == Method.POST) {
+            int emptyLineIndex = request.indexOf("\r\n\r\n");
+            if (emptyLineIndex != -1) {
+                String body = request.substring(emptyLineIndex).trim();
+                parseParameters(body);
+            }
         }
 
         /*System.out.println("Method: " + this.method);
@@ -87,9 +95,27 @@ public class HTTPRequest {
         ArrayList<String> sanitizedParts = new ArrayList<>();
         for (String part : parts) {
             if (!part.equals("..") && !part.equals(".")) {
+                if (part.contains(".")) {
+                    int qmarkIndex = part.indexOf("?");
+                    if (qmarkIndex != -1) {
+                        String[] fileAndParams = part.split("\\?");
+                        part = fileAndParams[0];
+                        parseParameters(fileAndParams[1]);
+                    }
+                }
                 sanitizedParts.add(part);
             }
         }
-        return String.join("/", sanitizedParts);
+        return String.join("/", sanitizedParts).replace("%20", " ");
+    }
+
+    private void parseParameters(String body) {
+        String[] params = body.split("&");
+        for (String param : params) {
+            String[] keyAndValue = param.split("=");
+            if (keyAndValue.length == 2) {
+                parameters.put(keyAndValue[0], keyAndValue[1]);
+            }
+        }
     }
 }
