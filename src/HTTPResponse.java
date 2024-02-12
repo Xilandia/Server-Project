@@ -8,7 +8,7 @@ public class HTTPResponse {
     private int contentLength;
     private boolean sendDecision = false;
     public HTTPResponse(HTTPRequest request) throws IOException {
-        if (request.getMethod() == HTTPRequest.Method.GET || request.getMethod() == HTTPRequest.Method.HEAD) {
+        if (request.getMethod() == HTTPRequest.Method.GET || request.getMethod() == HTTPRequest.Method.HEAD || request.getMethod() == HTTPRequest.Method.POST) {
             if (request.getIsHTML()) {
                 contentType = "content-type: text/html";
             } else if (request.getIsImage()) {
@@ -25,7 +25,7 @@ public class HTTPResponse {
                 requestedFile = new File(Server.config.getRoot(), Server.config.getDefaultPage());
                 contentLength = (int) requestedFile.length();
                 responseCode = 200;
-                if (request.getMethod() == HTTPRequest.Method.GET) {
+                if (request.getMethod() != HTTPRequest.Method.HEAD) {
                     sendDecision = true;
                 }
             } else {
@@ -35,7 +35,7 @@ public class HTTPResponse {
                     String canonicalPath = requestedFile.getCanonicalPath();
                     if (canonicalPath.startsWith(Server.config.getRoot())) {
                         responseCode = 200;
-                        if (request.getMethod() == HTTPRequest.Method.GET) {
+                        if (request.getMethod() != HTTPRequest.Method.HEAD) {
                             sendDecision = true;
                         }
                     } else {
@@ -48,7 +48,7 @@ public class HTTPResponse {
                         contentLength = (int) requestedFile.length();
                         responseCode = 404;
                         contentType = "content-type: text/html";
-                        if (request.getMethod() == HTTPRequest.Method.GET) {
+                        if (request.getMethod() != HTTPRequest.Method.HEAD) {
                             sendDecision = true;
                         }
                     } else {
@@ -57,10 +57,6 @@ public class HTTPResponse {
                     }
                 }
             }
-        }
-        else if (request.getMethod() == HTTPRequest.Method.POST) {
-            System.out.println("Sending 404, params_info not implemented");
-            responseCode = 404;
         }
         else if (request.getMethod() == HTTPRequest.Method.TRACE) {
             contentType = "content-type: message/http";
