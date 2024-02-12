@@ -1,3 +1,4 @@
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,8 +12,10 @@ public class HTTPRequest {
     private boolean isHTML;
     private boolean isImage;
     private boolean isIcon;
+    private boolean isCSS;
     private String referer;
     private String userAgent;
+    private byte[] requestForTrace;
     private static HashMap<String, String> parameters = new HashMap<String, String>();
 
     public HTTPRequest(String request) {
@@ -29,6 +32,7 @@ public class HTTPRequest {
         this.isHTML = path.endsWith(".html") || path.endsWith(".htm") || path.equals("/");
         this.isImage = path.endsWith(".bmp") || path.endsWith(".gif") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg"); // bonus - want to support jpeg bc why not
         this.isIcon = path.endsWith(".ico");
+        this.isCSS = path.endsWith(".css");
         for (int i = 1; i < lines.length; i++) {
             String[] parts = lines[i].split(": ");
             if (parts[0].equals("Referer")) {
@@ -36,6 +40,9 @@ public class HTTPRequest {
             } else if (parts[0].equals("User-Agent")) {
                 this.userAgent = parts[1];
             }
+        }
+        if (this.method == Method.TRACE) {
+            this.requestForTrace = request.getBytes(StandardCharsets.UTF_8);
         }
 
         /*System.out.println("Method: " + this.method);
@@ -65,6 +72,14 @@ public class HTTPRequest {
 
     public boolean getIsIcon() {
         return this.isIcon;
+    }
+
+    public boolean getIsCSS() {
+        return this.isCSS;
+    }
+
+    public byte[] getRequestForTrace() {
+        return this.requestForTrace;
     }
 
     private String SanitizePath(String path) {

@@ -38,8 +38,10 @@ public class ClientConnection implements Runnable{
                 response = new HTTPResponse(request);
                 System.out.println("Response header:\n" + response.buildHeaders() + "\n");
                 outToClient.writeBytes(response.buildHeaders());
-                if (response.getResponseCode() == 200) {
+                if (response.getSendDecision()) {
                     Files.copy(response.getFile().toPath(), outToClient);
+                } else if (request.getMethod() == HTTPRequest.Method.TRACE) {
+                    outToClient.write(request.getRequestForTrace());
                 }
                 outToClient.flush();
             }
