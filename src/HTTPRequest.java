@@ -16,7 +16,7 @@ public class HTTPRequest {
     private String referer;
     private String userAgent;
     private byte[] requestForTrace;
-    private static HashMap<String, String> parameters = new HashMap<String, String>();
+    private static HashMap<String, String> parameters = new HashMap<>();
 
     public HTTPRequest(String request) {
         parseRequest(request);

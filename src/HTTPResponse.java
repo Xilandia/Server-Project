@@ -59,7 +59,7 @@ public class HTTPResponse {
             }
         }
         else if (request.getMethod() == HTTPRequest.Method.POST) {
-            System.out.println("Sending 404");
+            System.out.println("Sending 404, params_info not implemented");
             responseCode = 404;
         }
         else if (request.getMethod() == HTTPRequest.Method.TRACE) {
@@ -68,7 +68,7 @@ public class HTTPResponse {
             contentLength = request.getRequestForTrace().length;
         }
         else {
-            System.out.println("Sending 501");
+            System.out.println("Sending 501, method not implemented");
             responseCode = 501;
         }
     }
