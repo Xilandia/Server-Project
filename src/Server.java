@@ -7,7 +7,7 @@ public class Server {
     public static Config config;
     private int port;
 
-    public void StartServer() throws Exception{
+    public void StartServer() throws Exception {
         config = new Config("config.ini");
         port = config.getPort();
         System.out.println("Listening on port " + port);

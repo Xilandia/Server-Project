@@ -4,6 +4,7 @@ public class Main {
         try {
             server.StartServer();
         } catch (Exception e) {
+            System.err.println("Server failed to start");
             System.err.println(e.getMessage());
         }
     }
