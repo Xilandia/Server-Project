@@ -1,3 +1,4 @@
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,6 +97,10 @@ public class HTTPRequest {
         return this.isChunked;
     }
 
+    public HashMap<String, String> getParameters() {
+        return parameters;
+    }
+
     private String SanitizePath(String path) {
         String[] parts = path.split("/");
         ArrayList<String> sanitizedParts = new ArrayList<>();
@@ -120,8 +125,22 @@ public class HTTPRequest {
         for (String param : params) {
             String[] keyAndValue = param.split("=");
             if (keyAndValue.length == 2) {
-                parameters.put(keyAndValue[0], keyAndValue[1]);
+                if (keyAndValue[0].equals("params")) {
+                    String[] decodedParams = URLDecoder.decode(keyAndValue[1], StandardCharsets.UTF_8).split("\n");
+                    for (String decodedParam : decodedParams) {
+                        String[] decodedKeyAndValue = decodedParam.split("=");
+                        if (decodedKeyAndValue.length == 2) {
+                            parameters.put(decodedKeyAndValue[0], decodedKeyAndValue[1]);
+                        }
+                    }
+                } else {
+                    parameters.put(keyAndValue[0], keyAndValue[1]);
+                }
             }
+        }
+
+        for (String key : parameters.keySet()) {
+            System.out.println("Key: " + key + ", Value: " + parameters.get(key));
         }
     }
 }

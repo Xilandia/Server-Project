@@ -40,7 +40,7 @@ public class ClientConnection implements Runnable{
             if (contentLength > 0) {
                 char[] body = new char[contentLength];
                 inFromClient.read(body, 0, contentLength);
-                fullClientRequest += new String(body);
+                fullClientRequest += "\r\n\r\n" + new String(body);
             }
             if (!fullClientRequest.isEmpty()) {
                 request = new HTTPRequest(fullClientRequest);
@@ -57,7 +57,9 @@ public class ClientConnection implements Runnable{
                 } else {
                     System.out.println("Response header:\n" + response.buildHeaders() + "\n");
                     outToClient.writeBytes(response.buildHeaders());
-                    if (response.getSendDecision()) {
+                    if (response.getParamsInfo()) {
+                        outToClient.write(response.getParamsInfoResponse());
+                    } else if (response.getSendDecision()) {
                         Files.copy(response.getFile().toPath(), outToClient);
                     } else if (request.getMethod() == HTTPRequest.Method.TRACE) {
                         outToClient.write(request.getRequestForTrace());
