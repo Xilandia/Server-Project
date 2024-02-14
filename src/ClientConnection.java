@@ -45,14 +45,25 @@ public class ClientConnection implements Runnable{
             if (!fullClientRequest.isEmpty()) {
                 request = new HTTPRequest(fullClientRequest);
                 response = new HTTPResponse(request);
-                System.out.println("Response header:\n" + response.buildHeaders() + "\n");
-                outToClient.writeBytes(response.buildHeaders());
-                if (response.getSendDecision()) {
-                    Files.copy(response.getFile().toPath(), outToClient);
-                } else if (request.getMethod() == HTTPRequest.Method.TRACE) {
-                    outToClient.write(request.getRequestForTrace());
+                if (request.getIsChunked()) {
+                    System.out.println("Response header:\n" + response.buildChunkedHeaders() + "\n");
+                    outToClient.writeBytes(response.buildChunkedHeaders());
+                    if (response.getSendDecision()) {
+                        sendChunkedFile(outToClient);
+                    } else if (request.getMethod() == HTTPRequest.Method.TRACE) {
+                        sendChunkedTrace(outToClient);
+                    }
+                    outToClient.flush();
+                } else {
+                    System.out.println("Response header:\n" + response.buildHeaders() + "\n");
+                    outToClient.writeBytes(response.buildHeaders());
+                    if (response.getSendDecision()) {
+                        Files.copy(response.getFile().toPath(), outToClient);
+                    } else if (request.getMethod() == HTTPRequest.Method.TRACE) {
+                        outToClient.write(request.getRequestForTrace());
+                    }
+                    outToClient.flush();
                 }
-                outToClient.flush();
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
@@ -62,6 +73,44 @@ public class ClientConnection implements Runnable{
             } catch (IOException e) {
                 System.err.println(e.getMessage());
             }
+        }
+    }
+
+    private void sendChunkedFile(DataOutputStream outToClient) {
+        int offset = 0;
+        int chunkSize;
+        int chunkLength = Server.config.getChunkLength();
+        try {
+            byte[] file = Files.readAllBytes(response.getFile().toPath());
+
+            while (offset < response.getContentLength()) {
+                chunkSize = Math.min(chunkLength, response.getContentLength() - offset);
+                outToClient.write((Integer.toHexString(chunkSize) + "\r\n").getBytes());
+                outToClient.write(file, offset, chunkSize);
+                outToClient.write("\r\n".getBytes());
+                offset += chunkLength;
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private void sendChunkedTrace(DataOutputStream outToClient) {
+        int offset = 0;
+        int chunkSize;
+        int chunkLength = Server.config.getChunkLength();
+        try {
+            byte[] trace = request.getRequestForTrace();
+
+            while (offset < response.getContentLength()) {
+                chunkSize = Math.min(chunkLength, response.getContentLength() - offset);
+                outToClient.write((Integer.toHexString(chunkSize) + "\r\n").getBytes());
+                outToClient.write(trace, offset, chunkSize);
+                outToClient.write("\r\n".getBytes());
+                offset += chunkLength;
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
     }
 }

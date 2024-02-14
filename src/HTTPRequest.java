@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class HTTPRequest {
     public enum Method {
-        GET, POST, HEAD, PUT, DELETE, CONNECT, OPTIONS, TRACE, PATCH
+        GET, POST, HEAD, TRACE, PUT, DELETE, CONNECT, OPTIONS, PATCH
     }
 
     private Method method;
@@ -15,6 +15,7 @@ public class HTTPRequest {
     private boolean isCSS;
     private String referer;
     private String userAgent;
+    private boolean isChunked;
     private byte[] requestForTrace;
     private static HashMap<String, String> parameters = new HashMap<>();
 
@@ -30,15 +31,16 @@ public class HTTPRequest {
         this.method = Method.valueOf(method);
         this.path = path;
         this.isHTML = path.endsWith(".html") || path.endsWith(".htm") || path.equals("/");
-        this.isImage = path.endsWith(".bmp") || path.endsWith(".gif") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg"); // bonus - want to support jpeg bc why not
+        this.isImage = path.endsWith(".bmp") || path.endsWith(".gif") || path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg");
         this.isIcon = path.endsWith(".ico");
         this.isCSS = path.endsWith(".css");
         for (int i = 1; i < lines.length; i++) {
             String[] parts = lines[i].split(": ");
-            if (parts[0].equals("Referer")) {
-                this.referer = parts[1];
-            } else if (parts[0].equals("User-Agent")) {
-                this.userAgent = parts[1];
+            parts[0] = parts[0].toLowerCase();
+            switch (parts[0]) {
+                case "referer" -> this.referer = parts[1];
+                case "user-agent" -> this.userAgent = parts[1];
+                case "chunked" -> this.isChunked = parts[1].equalsIgnoreCase("yes");
             }
         }
 
@@ -88,6 +90,10 @@ public class HTTPRequest {
 
     public byte[] getRequestForTrace() {
         return this.requestForTrace;
+    }
+
+    public boolean getIsChunked() {
+        return this.isChunked;
     }
 
     private String SanitizePath(String path) {

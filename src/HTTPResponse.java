@@ -14,7 +14,7 @@ public class HTTPResponse {
             } else if (request.getIsImage()) {
                 contentType = "content-type: image";
             } else if (request.getIsIcon()) {
-                contentType = "content-type: image/vnd.microsoft.icon";
+                contentType = "content-type: icon";
             } else if (request.getIsCSS()) {
                 contentType = "content-type: text/css";
             } else {
@@ -74,6 +74,11 @@ public class HTTPResponse {
                 "\r\ncontent-length: " + contentLength + "\r\n\r\n";
     }
 
+    public String buildChunkedHeaders() {
+        return "HTTP/1.1 " + responseCodeToString() + "\r\n" + contentType +
+                "\r\ntransfer-encoding: chunked\r\n\r\n";
+    }
+
     private String responseCodeToString() {
         switch (responseCode) {
             case 200:
@@ -95,6 +100,10 @@ public class HTTPResponse {
 
     public int getResponseCode() {
         return responseCode;
+    }
+
+    public int getContentLength() {
+        return contentLength;
     }
 
     public boolean getSendDecision() {
