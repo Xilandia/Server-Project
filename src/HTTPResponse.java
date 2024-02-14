@@ -10,6 +10,7 @@ public class HTTPResponse {
     private byte[] paramsInfoResponse;
     private boolean sendDecision = false;
     private boolean paramsInfo = false;
+
     public HTTPResponse(HTTPRequest request) throws IOException {
         if (request.getMethod() == HTTPRequest.Method.GET || request.getMethod() == HTTPRequest.Method.HEAD || request.getMethod() == HTTPRequest.Method.POST) {
             if (request.getIsHTML()) {

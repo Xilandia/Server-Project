@@ -9,11 +9,6 @@ public class ClientConnection implements Runnable{
 
     ClientConnection(Socket clientSocket) {
         this.clientSocket = clientSocket;
-//        try {
-//            this.clientSocket.setSoTimeout(500);
-//        } catch (SocketException e) {
-//        }
-
     }
 
     @Override

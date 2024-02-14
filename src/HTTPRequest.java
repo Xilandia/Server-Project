@@ -21,10 +21,6 @@ public class HTTPRequest {
     private static HashMap<String, String> parameters = new HashMap<>();
 
     public HTTPRequest(String request) {
-        parseRequest(request);
-    }
-
-    private void parseRequest(String request) {
         String[] lines = request.split("\n");
         String[] firstLine = lines[0].split(" ");
         String method = firstLine[0];
@@ -55,14 +51,6 @@ public class HTTPRequest {
                 parseParameters(body);
             }
         }
-
-        /*System.out.println("Method: " + this.method);
-        System.out.println("Path: " + this.path);
-        System.out.println("Is HTML: " + this.isHTML);
-        System.out.println("Is Image: " + this.isImage);
-        System.out.println("Is Icon: " + this.isIcon);
-        System.out.println("Referer: " + this.referer);
-        System.out.println("User-Agent: " + this.userAgent);*/
     }
 
     public Method getMethod() {
@@ -137,10 +125,6 @@ public class HTTPRequest {
                     parameters.put(keyAndValue[0], keyAndValue[1]);
                 }
             }
-        }
-
-        for (String key : parameters.keySet()) {
-            System.out.println("Key: " + key + ", Value: " + parameters.get(key));
         }
     }
 }
